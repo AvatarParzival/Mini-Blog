@@ -2,7 +2,7 @@
 $host = 'localhost';
 $db   = 'miniblog';
 $user = 'root';
-$pass = '';               // ← your MySQL pwd
+$pass = ''; 
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

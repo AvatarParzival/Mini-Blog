@@ -1,9 +1,15 @@
 <?php
+// This must be the VERY FIRST LINE - no whitespace before!
 require_once __DIR__ . '/partials/header.php';
+
+if (isset($_SESSION['user_id'])) {
+    header('Location: /miniblog/dashboard.php');
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
-    $pass  = $_POST['password'];
+    $pass = $_POST['password'];
 
     $stmt = $pdo->prepare("SELECT id, name, password FROM users WHERE email = ?");
     $stmt->execute([$email]);
@@ -11,23 +17,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($user && password_verify($pass, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['name']    = $user['name'];
-        header('Location: /miniblog/dashboard.php'); exit;
+        $_SESSION['name'] = $user['name'];
+        header('Location: /miniblog/dashboard.php');
+        exit;
     } else {
-        $_SESSION['flash']['danger'] = 'Invalid credentials.';
+        $loginError = 'Invalid credentials.';
     }
 }
 ?>
-<h2>Login</h2>
-<form method="post">
-  <div class="mb-3">
-    <label>Email</label>
-    <input type="email" name="email" class="form-control" required>
-  </div>
-  <div class="mb-3">
-    <label>Password</label>
-    <input type="password" name="password" class="form-control" required>
-  </div>
-  <button class="btn btn-primary">Login</button>
-</form>
+
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center mb-4">Login</h2>
+                        
+                        <?php if (!empty($loginError)): ?>
+                            <div class="alert alert-danger"><?= $loginError ?></div>
+                        <?php endif; ?>
+
+                        <form method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" name="password" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
 <?php require_once __DIR__ . '/partials/footer.php'; ?>
